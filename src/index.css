@@ -1,0 +1,42 @@
+@font-face {
+  font-family: "AnimeFont";
+  src: url(./assets/fonts/CrunchyTime.ttf) format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@import "tailwindcss";
+
+@theme {
+  --font-logo: "AnimeFont", sans-serif;
+
+  /* Warna identitas utama (logo, button) */
+  --color-brand: #fa993e;
+  --color-brand-dark: #e48730;
+  --color-brand-light: #fbb367;
+
+  /* Base */
+  --color-base: #1a2024;
+
+  /* Surface turunan dari base (lebih terang sedikit) */
+  --color-surface-1: #20272c; /* sidebar */
+  --color-surface-2: #242d33; /* navbar */
+  --color-surface-3: #2a343b; /* card */
+
+  /* Border */
+  --color-outline: #313c44;
+
+  /* Text - Dark Mode */
+  --color-foreground: #eeeeee;
+  --color-foreground-muted: #9ca3af;
+
+  /* Text - Light Surface */
+  --color-foreground-inverse: #1f2937;
+  --color-foreground-inverse-muted: #4b5563;
+}
+
+body {
+  background-color: var(--color-base);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
