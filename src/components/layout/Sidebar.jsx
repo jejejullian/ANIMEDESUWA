@@ -10,6 +10,7 @@ const sidebarMenu = [
 
 export default function Sidebar({ isOpen }) {
   const location = useLocation();
+  
 
   return (
     <aside 

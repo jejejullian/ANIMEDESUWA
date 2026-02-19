@@ -6,6 +6,7 @@ import MainLayout from "./components/layout/MainLayout";
 
 // Import Halaman
 import Home from "./pages/Home";
+import Trending from "@pages/Trending";
 
 function App() {
   return (
@@ -29,7 +30,7 @@ function App() {
           path="/trending" 
           element={
             <MainLayout>
-              <div className="text-center mt-10">Halaman Trending</div>
+              <Trending/>
             </MainLayout>
           } 
         />

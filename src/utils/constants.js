@@ -9,7 +9,7 @@ export const JIKAN_API_BASE = 'https://api.jikan.moe/v4'
 export const JIKAN_ENDPOINTS = {
   // Home
   TOP_ANIME: '/top/anime',
-  SEASON_NOW: '/seasons/now',
+  SEASON_NOW: 'filter=airing&sfw=true&limit=24',
   SEASON_UPCOMING: '/seasons/upcoming',
   SCHEDULES: '/schedules',
 
