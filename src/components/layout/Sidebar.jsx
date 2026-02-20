@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { FaHome, FaFire, FaThLarge, FaCalendarAlt, FaSignInAlt } from "react-icons/fa"; // Tambah FaSignInAlt
+import { FaHome, FaFire, FaThLarge, FaCalendarAlt, FaSignInAlt } from "react-icons/fa"; 
 
 const sidebarMenu = [
   { name: "Home", path: "/", icon: <FaHome /> },
@@ -10,7 +10,6 @@ const sidebarMenu = [
 
 export default function Sidebar({ isOpen }) {
   const location = useLocation();
-  
 
   return (
     <aside 
@@ -41,8 +40,7 @@ export default function Sidebar({ isOpen }) {
         </ul>
       </nav>
 
-      {/* --- BAGIAN LOGIN (KHUSUS MOBILE) --- */}
-      {/* Kita taruh di bawah Sidebar */}
+      {/* --- BAGIAN LOGIN (MOBILE) --- */}
       <div className="p-4 md:hidden">
         <Link 
           to="/login"

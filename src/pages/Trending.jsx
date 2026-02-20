@@ -13,12 +13,15 @@ export default function Trending() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`${JIKAN_API_BASE}/top/anime?${JIKAN_ENDPOINTS.SEASON_NOW}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Gagal mengambil data dari Jikan API");
-        return res.json();
-      })
-      .then((data) => {
+    const fetchTrending = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`${JIKAN_API_BASE}/top/anime?${JIKAN_ENDPOINTS.SEASON_NOW}`);
+
+        if (!res.ok) throw new Error("Gagal mengambil data dari JIKAN API");
+
+        const data = await res.json();
+
         const categorized = {
           japan: [],
           china: [],
@@ -56,13 +59,15 @@ export default function Trending() {
         });
 
         setLists(categorized);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error:", err);
+      } catch (err) {
+        console.log("Error", err);
         setError(err.message);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchTrending()
   }, []);
 
   if (loading) {
@@ -88,7 +93,7 @@ export default function Trending() {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold text-foreground mb-8">Anime Trending Saat Ini</h1>
+      <h1 className="text-3xl font-bold text-foreground mb-8">Anime Trending Now</h1>
 
       {/* Section Jepang */}
       {hasJapan && (

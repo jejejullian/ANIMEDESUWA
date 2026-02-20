@@ -8,9 +8,7 @@ export default function Navbar({ onMenuClick }) {
 
   return (
     <header className="bg-surface-2 shadow-sm h-16 fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4">
-      {/* --- MODE NORMAL --- */}
-      {/* Kita tambahkan logic: Jika Search Mobile terbuka, sembunyikan ini (TAPI HANYA DI HP) */}
-      {/* Kalau di Laptop (md:flex), ini harus SELALU muncul */}
+      {/* Mode normal: hide di HP saat search aktif, tampil selalu di md+ */}
       <div className={`flex items-center gap-4 w-full justify-between ${isSearchOpen ? "hidden md:flex" : "flex"}`}>
         {/* KIRI: Hamburger + Logo */}
         <div className="flex items-center gap-4 ">
@@ -23,15 +21,14 @@ export default function Navbar({ onMenuClick }) {
           </Link>
         </div>
 
-        {/* TENGAH: Search Bar (Hanya Muncul di LAPTOP) */}
+        {/* Search Bar (Hanya Muncul di LAPTOP) */}
         <div className="hidden md:flex flex-1 max-w-xl mx-8 relative">
           <input type="text" placeholder="Cari anime..." className="w-full bg-foreground text-foreground-inverse rounded-full py-2 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-brand-dark transition" />
           <FaSearch className="absolute right-3 top-3 text-foreground-inverse" />
         </div>
 
-        {/* KANAN: Icon Search (HP) & Login (Laptop) */}
+        {/* Icon Search (HP)*/}
         <div className="flex items-center gap-3">
-          {/* Icon Search (Hanya Muncul di HP) */}
           <button onClick={() => setIsSearchOpen(true)} className="md:hidden text-foreground p-2rounded-full">
             <FaSearch size={20} />
           </button>
@@ -43,10 +40,7 @@ export default function Navbar({ onMenuClick }) {
         </div>
       </div>
 
-      {/* --- MODE SEARCH MOBILE (Overlay) --- */}
-      {/* PERBAIKAN DI SINI: Tambahkan 'md:hidden' di class utama */}
-      {/* Artinya: Kalau layar masuk ukuran md (Laptop), elemen ini WAJIB HILANG, bodo amat isSearchOpen true/false */}
-      {/* KODE BARU (Sliding / Translation) */}
+    {/* Mobile search overlay (hidden on md+) */}
       <div
         className={`
             absolute top-0 left-0 right-0 h-16 bg-surface-1 z-50 px-4 flex items-center gap-2 

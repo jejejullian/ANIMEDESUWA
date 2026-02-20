@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 export default function AnimeCard({ anime }) {
     const navigate = useNavigate()
   return (
-    <div onClick={()=>navigate(`/anime/${anime.mal}`)} className="bg-surface-1 rounded-lg overflow-hidden shadow hover:shadow-lg hover:scale-105 transition-all cursor-pointer flex flex-col h-full">
+    <div onClick={()=>navigate(`/anime/${anime.mal_id}`)} className="bg-surface-1 rounded-lg overflow-hidden shadow hover:shadow-lg hover:scale-105 transition-all cursor-pointer flex flex-col h-full">
       
       <img 
         src={anime.images.jpg.image_url} 

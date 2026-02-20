@@ -20,7 +20,7 @@ export const JIKAN_ENDPOINTS = {
   // Detail
   ANIME_BY_ID: (id) => `/anime/${id}`,
   ANIME_CHARACTERS: (id) => `/anime/${id}/characters`,
-  ANIME_EPISODES: (id) => `/anime/${id}/episodes`,
+  ANIME_EPISODES: (id, page = 1) => `/anime/${id}/episodes?page=${page}`,
   ANIME_PICTURES: (id) => `/anime/${id}/pictures`,
 
   // Extras
