@@ -4,28 +4,26 @@ import Navbar from "./Navbar";
 
 // MainLayout.jsx
 export default function MainLayout({ children }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(null); // ← null dulu
+  const [isSidebarOpen, setIsSidebarOpen] = useState(null); 
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 768) {
+      if (window.innerWidth < 1024) {
         setIsSidebarOpen(false);
       } else {
         setIsSidebarOpen(true);
       }
     };
 
-    handleResize();           // panggil sekali
+    handleResize();           
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // ← Tambahkan pengecekan ini
   if (isSidebarOpen === null) {
     return (
       <div className="min-h-screen font-sans">
-        <Navbar onMenuClick={() => {}} /> {/* dummy */}
-        {/* Jangan render Sidebar & main dulu */}
+        <Navbar onMenuClick={() => {}} /> 
       </div>
     );
   }
@@ -38,8 +36,8 @@ export default function MainLayout({ children }) {
 
       <main 
         className={`
-          pt-16 p-6 transition-all duration-300 
-          ${isSidebarOpen ? "md:ml-64" : "ml-0"}
+          pt-16 p-6 transition-all duration-300 ease-in-out 
+          ${isSidebarOpen ? "lg:ml-64" : "ml-0"}
         `}
       >
         <div className="max-w-7xl mx-auto">
@@ -50,7 +48,7 @@ export default function MainLayout({ children }) {
       {isSidebarOpen && (
         <div 
           onClick={() => setIsSidebarOpen(false)} 
-          className="fixed inset-0 bg-black/50 z-30 md:hidden"
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
         />
       )}
     </div>

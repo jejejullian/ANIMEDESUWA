@@ -3,12 +3,10 @@ import { FaSearch, FaBars, FaArrowLeft } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 export default function Navbar({ onMenuClick }) {
-  // State untuk mengatur apakah Search Bar mobile sedang terbuka
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
     <header className="bg-surface-2 shadow-sm h-16 fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4">
-      {/* Mode normal: hide di HP saat search aktif, tampil selalu di md+ */}
       <div className={`flex items-center gap-4 w-full justify-between ${isSearchOpen ? "hidden md:flex" : "flex"}`}>
         {/* KIRI: Hamburger + Logo */}
         <div className="flex items-center gap-4 ">

@@ -99,7 +99,7 @@ export default function Trending() {
       {hasJapan && (
         <section className="mb-12">
           <h2 className="text-2xl font-semibold text-brand mb-4">Anime Jepang</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 auto-rows-fr">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 auto-rows-fr">
             {lists.japan.map((anime) => (
               <AnimeCard key={anime.mal_id} anime={anime} />
             ))}
@@ -111,7 +111,7 @@ export default function Trending() {
       {hasChina && (
         <section className="mb-12">
           <h2 className="text-2xl font-semibold text-brand mb-4">Donghua (China)</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 auto-rows-fr">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 auto-rows-fr">
             {lists.china.map((anime) => (
               <AnimeCard key={anime.mal_id} anime={anime} />
             ))}
@@ -123,7 +123,7 @@ export default function Trending() {
       {hasKorea && (
         <section className="mb-12">
           <h2 className="text-2xl font-semibold text-brand mb-4">Aeni / Adaptasi Korea</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 auto-rows-fr">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 auto-rows-fr">
             {lists.korea.map((anime) => (
               <AnimeCard key={anime.mal_id} anime={anime} />
             ))}
@@ -135,7 +135,7 @@ export default function Trending() {
       {hasOthers && (
         <section className="mb-12">
           <h2 className="text-2xl font-semibold text-brand mb-4">Lainnya</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 auto-rows-fr">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 auto-rows-fr">
             {lists.others.map((anime) => (
               <AnimeCard key={anime.mal_id} anime={anime} />
             ))}
