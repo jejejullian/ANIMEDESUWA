@@ -7,8 +7,8 @@ export default function Navbar({ onMenuClick }) {
 
   return (
     <header className="bg-surface-2 shadow-sm h-16 fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4">
-      <div className={`flex items-center gap-4 w-full justify-between ${isSearchOpen ? "hidden md:flex" : "flex"}`}>
-        {/* KIRI: Hamburger + Logo */}
+      <nav className={`flex items-center gap-4 w-full justify-between ${isSearchOpen ? "hidden md:flex" : "flex"}`}>
+        {/* Hamburger + Logo */}
         <div className="flex items-center gap-4 ">
           <button onClick={onMenuClick} className="text-foreground hover:text-brand-light transition">
             <FaBars size={24} />
@@ -36,7 +36,7 @@ export default function Navbar({ onMenuClick }) {
             Masuk
           </Link>
         </div>
-      </div>
+      </nav>
 
     {/* Mobile search overlay (hidden on md+) */}
       <div
