@@ -1,20 +1,21 @@
 export default function SectionSkeleton() {
   return (
-    <section className="w-full px-4 md:px-8 mt-12">
-      <div className="flex justify-between mb-4">
-        <div className="h-5 w-40 bg-muted rounded" />
-        <div className="h-4 w-16 bg-muted rounded" />
-      </div>
-
-      <div className="flex gap-4 overflow-hidden">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div
-            key={i}
-            className="min-w-40 md:min-w-45 h-60
-            rounded-xl bg-muted animate-pulse"
-          />
-        ))}
-      </div>
-    </section>
+    <div className="flex gap-6 overflow-hidden p-4">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div
+          key={i}
+          className="shrink-0 w-28 sm:w-37 md:w-45 space-y-3"
+        >
+          {/* Image skeleton */}
+          <div className="w-full h-40 sm:h-56 md:h-64 rounded-xl bg-gray-800 animate-pulse" />
+          
+          {/* Title skeleton */}
+          <div className="space-y-2">
+            <div className="h-3 bg-gray-800 rounded animate-pulse" />
+            <div className="h-3 bg-gray-800 rounded w-3/4 animate-pulse" />
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
