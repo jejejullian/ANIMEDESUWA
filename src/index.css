@@ -11,14 +11,13 @@
   --font-logo: "AnimeFont", sans-serif;
 
   /* Warna identitas utama (logo, button) */
-  --color-brand: #fa993e;
-  --color-brand-dark: #e48730;
-  --color-brand-light: #fbb367;
+  --color-brand: #ff6900;
+  --color-brand-dark: #cc5200;
+  --color-brand-light: #ff9a3c;
 
   /* Base */
   --color-base: #1a2024;
 
-  /* Surface turunan dari base (lebih terang sedikit) */
   --color-surface-1: #20272c; /* sidebar */
   --color-surface-2: #242d33; /* navbar */
   --color-surface-3: #2a343b; /* card */
@@ -26,11 +25,11 @@
   /* Border */
   --color-outline: #313c44;
 
-  /* Text - Dark Mode */
+  /* Text - Light Surface */
   --color-foreground: #eeeeee;
   --color-foreground-muted: #9ca3af;
-
-  /* Text - Light Surface */
+  
+  /* Text - Dark Mode */
   --color-foreground-inverse: #1f2937;
   --color-foreground-inverse-muted: #4b5563;
 }
@@ -42,6 +41,7 @@
 
 *::-webkit-scrollbar {
   width: 6px;
+  height: 6px;          
 }
 
 *::-webkit-scrollbar-track {
@@ -53,8 +53,33 @@
   border-radius: 999px;
 }
 
+
+.section-carousel-scroll {
+  scrollbar-width: none; 
+}
+
+.section-carousel-scroll::-webkit-scrollbar {
+  display: none; 
+}
+
+
 body {
   background-color: var(--color-base);
   color: var(--color-foreground);
   font-family: var(--font-sans);
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeSlideUp {
+  animation: fadeSlideUp 0.5s ease forwards;
 }

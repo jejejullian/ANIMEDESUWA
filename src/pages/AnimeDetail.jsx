@@ -1,87 +1,51 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { JIKAN_API_BASE, JIKAN_ENDPOINTS } from "@utils/constants";
 import { FaArrowLeft } from "react-icons/fa";
+
+import { useAnimeDetail } from "@hooks/useAnimeDetail";
+import { useAnimeEpisodes } from "@hooks/useAnimeEpisodes";
 
 export default function AnimeDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [anime, setAnime] = useState(null);
-  const [episodes, setEpisodes] = useState([]);
-  const [episodesLoading, setEpisodesLoading] = useState(false);
-  const [episodesError, setEpisodesError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [hasMoreEpisodes, setHasMoreEpisodes] = useState(true);
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { 
+    data: anime, 
+    isLoading: detailLoading, 
+    error: detailError 
+  } = useAnimeDetail(id);
 
-  // Fetch detail anime
-  useEffect(() => {
-    if (!id || isNaN(id)) {
-      setError("ID anime tidak valid");
-      setLoading(false);
-      return;
-    }
+  const { 
+    data: episodesData, 
+    isLoading: episodesLoading, 
+    error: episodesError 
+  } = useAnimeEpisodes(id, currentPage);
 
-    const fetchDetail = async () => {
-      try {
-        const res = await fetch(`${JIKAN_API_BASE}/anime/${id}/full`);
-        if (!res.ok) throw new Error(`Anime tidak ditemukan (status ${res.status})`);
-        const data = await res.json();
-        setAnime(data.data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const episodes = episodesData?.episodes || [];
+  const hasMoreEpisodes = episodesData?.hasNextPage ?? false;
 
-    fetchDetail();
-  }, [id]);
-
-  // Fetch episodes
-  useEffect(() => {
-    if (!anime || !hasMoreEpisodes) return;
-
-    const fetchEpisodes = async () => {
-      setEpisodesLoading(true);
-      try {
-        const res = await fetch(`${JIKAN_API_BASE}${JIKAN_ENDPOINTS.ANIME_EPISODES(id, currentPage)}`);
-        if (!res.ok) throw new Error(`Gagal memuat episode (status ${res.status})`);
-        const data = await res.json();
-
-        setEpisodes((prev) => {
-          const existingIds = new Set(prev.map((ep) => ep.mal_id));
-          const newEp = data.data.filter((ep) => !existingIds.has(ep.mal_id));
-          return [...prev, ...newEp];
-        });
-
-        setHasMoreEpisodes(data.pagination?.has_next_page ?? false);
-      } catch (err) {
-        setEpisodesError(err.message);
-      } finally {
-        setEpisodesLoading(false);
-      }
-    };
-
-    fetchEpisodes();
-  }, [anime, currentPage, id, hasMoreEpisodes]);
-
-  if (loading) return <div className="p-6 text-center">Memuat detail anime...</div>;
-  if (error) return <div className="p-6 text-red-500 text-center">Error: {error}</div>;
+  if (detailLoading) return <div className="p-6 text-center">Memuat detail anime...</div>;
+  if (detailError) return <div className="p-6 text-red-500 text-center">Error: {detailError.message}</div>;
   if (!anime) return <div className="p-6 text-center">Anime tidak ditemukan</div>;
 
   return (
     <main className="min-h-screen bg-background p-6">
-      <button onClick={() => navigate(-1)} className="mb-6 text-brand hover:text-brand-light flex items-center gap-2 cursor-pointer border px-4 py-2 rounded-2xl">
+      <button 
+        onClick={() => navigate(-1)} 
+        className="mb-6 text-brand hover:text-brand-light flex items-center gap-2 cursor-pointer border px-4 py-2 rounded-2xl"
+      >
         <FaArrowLeft /> Kembali
       </button>
 
       <article className="max-w-6xl mx-auto">
         <header className="flex flex-col md:flex-row gap-8 mb-10">
-          <img src={anime.images.jpg.large_image_url || "https://via.placeholder.com/300x450?text=No+Image"} alt={anime.title} className="w-full md:w-80 rounded-xl shadow-2xl object-cover" />
+          <img 
+            src={anime.images.jpg.large_image_url || "https://via.placeholder.com/300x450?text=No+Image"} 
+            alt={anime.title} 
+            className="w-full md:w-80 rounded-xl shadow-2xl object-cover" 
+          />
 
           <div className="flex-1">
             <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-4">{anime.title}</h1>
@@ -97,9 +61,7 @@ export default function AnimeDetail() {
             <dl className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm mb-8">
               <div>
                 <dt className="text-foreground-muted">Score</dt>
-                <dd>
-                  <strong className="text-brand">⭐ {anime.score || "N/A"}</strong>
-                </dd>
+                <dd><strong className="text-brand">⭐ {anime.score || "N/A"}</strong></dd>
               </div>
               <div>
                 <dt className="text-foreground-muted">Episodes</dt>
@@ -123,18 +85,21 @@ export default function AnimeDetail() {
               <header className="px-8 pt-8 pb-4 border-b border-outline/30 bg-surface-1">
                 <h2 className="text-2xl font-bold text-foreground">Sinopsis</h2>
               </header>
-
               <div className="max-h-52 overflow-y-auto scrollbar-thin scrollbar-thumb-brand scrollbar-track-surface-2 px-8 py-6">
-                <p className="text-foreground-muted leading-relaxed whitespace-pre-line">{anime.synopsis || "Tidak ada sinopsis tersedia."}</p>
+                <p className="text-foreground-muted leading-relaxed whitespace-pre-line">
+                  {anime.synopsis || "Tidak ada sinopsis tersedia."}
+                </p>
               </div>
             </section>
 
-            <button className="w-full md:w-auto bg-brand text-foreground px-8 py-4 rounded-xl font-bold hover:bg-brand-dark transition cursor-pointer">Tambah ke Watchlist</button>
+            <button className="w-full md:w-auto bg-brand text-foreground px-8 py-4 rounded-xl font-bold hover:bg-brand-dark transition cursor-pointer">
+              Tambah ke Watchlist
+            </button>
           </div>
         </header>
 
         {anime.trailer?.youtube_id && (
-          <section className="bg-surface-1 rounded-xl p-8">
+          <section className="bg-surface-1 rounded-xl p-8 mb-10">
             <h2 className="text-2xl font-bold mb-4">Trailer</h2>
             <div className="aspect-video rounded-lg overflow-hidden">
               <iframe
@@ -154,9 +119,7 @@ export default function AnimeDetail() {
       <section className="bg-surface-1 rounded-xl p-8 mt-10">
         <h2 className="text-2xl font-bold mb-6">Daftar Episode</h2>
 
-        {episodesLoading && episodes.length === 0 && <p className="text-foreground-muted text-center">Memuat daftar episode...</p>}
-
-        {episodesError && <p className="text-red-500 text-center">Gagal memuat episode: {episodesError}</p>}
+        {episodesError && <p className="text-red-500 text-center mb-4">Gagal memuat episode: {episodesError.message}</p>}
 
         {episodes.length > 0 ? (
           <>
@@ -169,12 +132,7 @@ export default function AnimeDetail() {
                   <div className="mt-auto flex items-center justify-between text-xs">
                     {ep.aired && (
                       <p className="text-xs text-foreground-muted mt-2">
-                        Tayang:{" "}
-                        {new Date(ep.aired).toLocaleDateString("id-ID", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
+                        Tayang: {new Date(ep.aired).toLocaleDateString("id-ID", { year: "numeric", month: "long", day: "numeric" })}
                       </p>
                     )}
                     {ep.filler && <span className="inline-block mt-2 text-xs px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded">Filler</span>}
@@ -182,16 +140,21 @@ export default function AnimeDetail() {
                 </li>
               ))}
             </ul>
+
             {hasMoreEpisodes && (
               <div className="mt-6 flex justify-center">
-                <button onClick={() => setCurrentPage((prev) => prev + 1)} disabled={episodesLoading} className="text-brand hover:text-brand-light flex items-center gap-2 cursor-pointer border px-6 py-2 rounded-2xl">
+                <button 
+                  onClick={() => setCurrentPage(prev => prev + 1)} 
+                  disabled={episodesLoading}
+                  className="text-brand hover:text-brand-light flex items-center gap-2 cursor-pointer border px-6 py-2 rounded-2xl disabled:opacity-50"
+                >
                   {episodesLoading ? "Memuat..." : "Muat Episode Selanjutnya"}
                 </button>
               </div>
             )}
           </>
         ) : (
-          !episodesLoading && !episodesError && <p className="text-foreground-muted text-center py-8">Tidak ada informasi episode tersedia untuk anime ini (mungkin movie atau belum rilis).</p>
+          !episodesLoading && <p className="text-foreground-muted text-center py-8">Tidak ada informasi episode tersedia untuk anime ini.</p>
         )}
       </section>
     </main>

@@ -1,79 +1,21 @@
-import { useState, useEffect } from "react";
-import { JIKAN_API_BASE, JIKAN_ENDPOINTS } from "@utils/constants";
+import { useTrending } from "@hooks/useTrending";
 import AnimeCard from "@components/anime/AnimeCard";
 
 export default function Trending() {
-  const [lists, setLists] = useState({
-    japan: [],
-    china: [],
-    korea: [],
-    others: [],
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { 
+    data: lists = { japan: [], china: [], korea: [], others: [], totalCount: 0 }, 
+    isLoading, 
+    error 
+  } = useTrending();
 
-  useEffect(() => {
-    const fetchTrending = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch(`${JIKAN_API_BASE}/top/anime?${JIKAN_ENDPOINTS.SEASON_NOW}`);
-
-        if (!res.ok) throw new Error("Gagal mengambil data dari JIKAN API");
-
-        const data = await res.json();
-
-        const categorized = {
-          japan: [],
-          china: [],
-          korea: [],
-          others: [],
-        };
-
-        data.data.forEach((anime) => {
-          const title = anime.title || anime.title_english || "";
-          const sourceLower = (anime.source || "").toLowerCase();
-          const studios = anime.studios || [];
-
-          // Deteksi China/Donghua
-          const isDonghua = sourceLower.includes("manhua") || sourceLower.includes("donghua") || sourceLower.includes("chinese") || sourceLower.includes("web novel") || /[\u4e00-\u9fff]{3,}/.test(title); // minimal 3 karakter Hanzi
-
-          const hasChineseStudio = studios.some((s) => {
-            const nameLower = (s.name || "").toLowerCase();
-            return nameLower.match(/bilibili|tencent|haoliners|sparkly|dongman|cmg|china|chinese|netEase|youku|iqi|acfun/i);
-          });
-
-          // Deteksi Korea
-          const isKorean = sourceLower.includes("manhwa") || sourceLower.includes("korean") || /[\uac00-\ud7af]{3,}/.test(title); // minimal 3 Hangul
-
-          const hasKoreanStudio = studios.some((s) => (s.name || "").toLowerCase().match(/korea|corea|dra|studio somewhere/i));
-
-          if (isDonghua || hasChineseStudio) {
-            categorized.china.push(anime);
-          } else if (isKorean || hasKoreanStudio) {
-            categorized.korea.push(anime);
-          } else if (studios.length > 0 && studios.some((s) => (s.name || "").toLowerCase() !== "unknown") && !studios.some((s) => (s.name || "").toLowerCase().includes("china"))) {
-            categorized.japan.push(anime);
-          } else {
-            categorized.others.push(anime);
-          }
-        });
-
-        setLists(categorized);
-      } catch (err) {
-        console.log("Error", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTrending()
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-xl text-foreground-muted">Sedang memuat anime trending...</div>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <div className="text-xl text-foreground-muted">Sedang memuat semua anime trending...</div>
+        <div className="text-sm text-foreground-muted">
+          Ini mungkin memakan waktu beberapa detik untuk mengambil semua data
+        </div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
       </div>
     );
   }
@@ -81,7 +23,7 @@ export default function Trending() {
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-xl text-red-500">Error: {error}</div>
+        <div className="text-xl text-red-500">Error: {error.message}</div>
       </div>
     );
   }
@@ -93,12 +35,21 @@ export default function Trending() {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold text-foreground mb-8">Anime Trending Now</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-foreground">Anime Trending Now</h1>
+        {lists.totalCount > 0 && (
+          <div className="text-sm text-foreground-muted">
+            Total: {lists.totalCount} anime
+          </div>
+        )}
+      </div>
 
       {/* Section Jepang */}
       {hasJapan && (
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold text-brand mb-4">Anime Jepang</h2>
+          <h2 className="text-2xl font-semibold text-brand mb-4">
+            Anime (Jepang) · {lists.japan.length}
+          </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 auto-rows-fr">
             {lists.japan.map((anime) => (
               <AnimeCard key={anime.mal_id} anime={anime} />
@@ -110,7 +61,9 @@ export default function Trending() {
       {/* Section China / Donghua */}
       {hasChina && (
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold text-brand mb-4">Donghua (China)</h2>
+          <h2 className="text-2xl font-semibold text-brand mb-4">
+            Donghua (China) · {lists.china.length}
+          </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 auto-rows-fr">
             {lists.china.map((anime) => (
               <AnimeCard key={anime.mal_id} anime={anime} />
@@ -122,7 +75,9 @@ export default function Trending() {
       {/* Section Korea */}
       {hasKorea && (
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold text-brand mb-4">Aeni / Adaptasi Korea</h2>
+          <h2 className="text-2xl font-semibold text-brand mb-4">
+            Aeni / Adaptasi Korea · {lists.korea.length}
+          </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 auto-rows-fr">
             {lists.korea.map((anime) => (
               <AnimeCard key={anime.mal_id} anime={anime} />
@@ -131,10 +86,12 @@ export default function Trending() {
         </section>
       )}
 
-      {/* Section Others*/}
+      {/* Section Others */}
       {hasOthers && (
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold text-brand mb-4">Lainnya</h2>
+          <h2 className="text-2xl font-semibold text-brand mb-4">
+            Lainnya · {lists.others.length}
+          </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 auto-rows-fr">
             {lists.others.map((anime) => (
               <AnimeCard key={anime.mal_id} anime={anime} />
