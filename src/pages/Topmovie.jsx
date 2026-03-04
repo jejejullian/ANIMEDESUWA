@@ -1,14 +1,17 @@
 import { useSearchParams } from "react-router-dom";
 import useTopMovie from "@hooks/useTopMovie";
-import GridSkeleton from "@components/ui/GridSkeleton";
-import Pagination from "@components/ui/Pagination";
 import AnimeCard from "@components/anime/AnimeCard";
+import Pagination from "@components/ui/Pagination";
+import GridSkeleton from "@components/ui/GridSkeleton";
+
+// Komponen Reusable
+import PageHeader from "@components/ui/PageHeader";
+import AnimeGrid from "@components/anime/AnimeGrid";
+import StateMessage from "@components/ui/StateMessage";
 
 export default function TopMovie() {
   const [searchParams, setSearchParams] = useSearchParams();
-
   const LIMIT = 24;
-
   const currentPage = Number(searchParams.get("page")) || 1;
 
   const { data, isLoading, error, isFetching, isPlaceholderData } = useTopMovie(currentPage, LIMIT);
@@ -22,23 +25,27 @@ export default function TopMovie() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  if (error) {
-    return <div className="flex items-center justify-center min-h-[60vh] text-red-500">{error.message}</div>;
-  }
+  if (error) return <StateMessage type="error" message={error.message} />;
 
   return (
     <div className={`p-4 sm:p-6 transition-opacity duration-300 ${isPlaceholderData ? "opacity-50" : "opacity-100"}`}>
-      <h1 className="text-2xl md:text-4xl font-bold mb-2">🎬 TOP MOVIE</h1>
+      <PageHeader 
+        emoji="🎬" 
+        title="TOP MOVIE" 
+        subtitle="Daftar film anime (Movie) dengan rating tertinggi" 
+      />
 
       {isLoading && !isPlaceholderData ? (
         <GridSkeleton count={LIMIT} />
+      ) : movies.length === 0 ? (
+        <StateMessage message="Tidak ada movie ditemukan." />
       ) : (
         <>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-4 auto-rows-fr">
+          <AnimeGrid isFetching={isFetching}>
             {movies.map((anime) => (
               <AnimeCard key={anime.mal_id} anime={anime} />
             ))}
-          </div>
+          </AnimeGrid>
 
           {totalPages > 1 && (
             <div className="mt-10 flex flex-col items-center gap-4">

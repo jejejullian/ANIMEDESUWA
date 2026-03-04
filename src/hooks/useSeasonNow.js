@@ -5,7 +5,7 @@ import { enqueue } from "@utils/requestQueue";
 const ITEMS_PER_PAGE = 24;
 
 async function fetchAllSeasonNow() {
-  // Fetch page 1 lewat antrian
+  // Fetch page 1 
   const firstData = await enqueue(async () => {
     const res = await fetch(
       `${JIKAN_API_BASE}${JIKAN_ENDPOINTS.SEASONS_NOW}?page=1&limit=25&${JIKAN_QUERIES.SFW}`
@@ -19,7 +19,7 @@ async function fetchAllSeasonNow() {
 
   const totalPages = firstData.pagination?.last_visible_page || 1;
 
-  // Fetch page sisanya SERIAL lewat antrian
+  // Fetch page sisanya 
   const otherData = [];
   for (let p = 2; p <= totalPages; p++) {
     const pageData = await enqueue(async () => {
@@ -39,7 +39,7 @@ async function fetchAllSeasonNow() {
     .filter((anime) => anime.status !== "Not yet aired" && anime.aired?.from !== null)
     .filter((anime, index, self) => index === self.findIndex((a) => a.title === anime.title));
 
-  // Sort: airing dulu
+  // Sort: airing 
   filtered.sort((a, b) => {
     if (a.airing && !b.airing) return -1;
     if (!a.airing && b.airing) return 1;
@@ -60,7 +60,7 @@ export default function useSeasonNow(page = 1) {
     queryFn: fetchAllSeasonNow,
     staleTime: 30 * 60 * 1000,
     retry: 2,
-    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000), // exponential backoff
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000), 
   });
 
   const totalItems = allAnime.length;
