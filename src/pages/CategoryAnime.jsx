@@ -6,7 +6,6 @@ import CategoryFilterBar from "@components/anime/CategoryFilterBar";
 import Pagination from "@components/ui/Pagination";
 import GridSkeleton from "@components/ui/GridSkeleton";
 
-import PageHeader from "@components/ui/PageHeader";
 import AnimeGrid from "@components/anime/AnimeGrid";
 import StateMessage from "@components/ui/StateMessage";
 
@@ -26,33 +25,15 @@ export default function CategoryAnime() {
   const pagination = data?.pagination;
   const totalPages = pagination?.last_visible_page || 1;
 
-  const update = (key) => (value) =>
-    setFilters((f) => ({ ...f, [key]: value, page: 1 }));
+  const update = (key) => (value) => setFilters((f) => ({ ...f, [key]: value, page: 1 }));
 
-  const hasActiveFilters =
-    filters.genre !== "" ||
-    filters.status !== "" ||
-    filters.type !== "" ||
-    filters.orderBy !== "rating" ||
-    filters.page !== 1;
+  const hasActiveFilters = filters.genre !== "" || filters.status !== "" || filters.type !== "" || filters.orderBy !== "rating" || filters.page !== 1;
 
   if (error) return <StateMessage type="error" message={error.message} />;
 
   return (
     <div className="p-4 sm:p-6 space-y-6 md:space-y-8">
-      <PageHeader 
-        emoji="🗂️" 
-        title="KATEGORI ANIME" 
-        subtitle="Jelajahi dan filter anime sesuai preferensi kamu" 
-      />
-
-      <CategoryFilterBar 
-        filters={filters}
-        update={update}
-        setFilters={setFilters}
-        genresData={genresData}
-        hasActiveFilters={hasActiveFilters}
-      />
+      <CategoryFilterBar filters={filters} update={update} setFilters={setFilters} genresData={genresData} hasActiveFilters={hasActiveFilters} />
 
       {isLoading ? (
         <GridSkeleton count={24} />
@@ -68,12 +49,7 @@ export default function CategoryAnime() {
 
           {totalPages > 1 && (
             <div className="flex justify-center mt-12">
-              <Pagination
-                currentPage={filters.page}
-                totalPages={totalPages}
-                onPageChange={(page) => setFilters((f) => ({ ...f, page }))}
-                isLoading={isFetching}
-              />
+              <Pagination currentPage={filters.page} totalPages={totalPages} onPageChange={(page) => setFilters((f) => ({ ...f, page }))} isLoading={isFetching} />
             </div>
           )}
         </>

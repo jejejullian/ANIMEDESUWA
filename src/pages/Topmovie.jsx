@@ -4,7 +4,6 @@ import AnimeCard from "@components/anime/AnimeCard";
 import Pagination from "@components/ui/Pagination";
 import GridSkeleton from "@components/ui/GridSkeleton";
 
-// Komponen Reusable
 import PageHeader from "@components/ui/PageHeader";
 import AnimeGrid from "@components/anime/AnimeGrid";
 import StateMessage from "@components/ui/StateMessage";

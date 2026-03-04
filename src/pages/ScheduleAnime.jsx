@@ -4,8 +4,6 @@ import useScheduleAnime from "@hooks/useScheduleAnime";
 import AnimeCard from "@components/anime/AnimeCard";
 import GridSkeleton from "@components/ui/GridSkeleton";
 
-// Komponen Reusable
-import PageHeader from "@components/ui/PageHeader";
 import AnimeGrid from "@components/anime/AnimeGrid";
 import StateMessage from "@components/ui/StateMessage";
 
@@ -47,12 +45,6 @@ export default function ScheduleAnime() {
 
   return (
     <div className="p-4 sm:p-6">
-      <PageHeader 
-        emoji="📅" 
-        title="SCHEDULE ANIME" 
-        subtitle="Jadwal rilis episode terbaru anime tayang" 
-      />
-
       {/* Day Badges */}
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-3 sm:gap-4 mb-8">
         {DAYS.map(({ en, id }) => {
@@ -76,14 +68,12 @@ export default function ScheduleAnime() {
       {isLoading && !data ? (
         <GridSkeleton count={24} />
       ) : animes.length === 0 ? (
-        <StateMessage message={`Tidak ada anime yang dijadwalkan untuk hari ${DAYS.find(d => d.en === day)?.id}.`} />
+        <StateMessage message={`Tidak ada anime yang dijadwalkan untuk hari ${DAYS.find((d) => d.en === day)?.id}.`} />
       ) : (
         <AnimeGrid isFetching={isFetching}>
           {animes.map((anime) => (
             <AnimeCard key={anime.mal_id} anime={anime}>
-              <span className="absolute top-2 left-2 bg-brand text-white text-[10px] font-bold px-2 py-1 rounded">
-                {day === getTodayDay() ? "HARI INI" : DAYS.find((d) => d.en === day)?.id.toUpperCase()}
-              </span>
+              <span className="absolute top-2 left-2 bg-brand text-white text-[10px] font-bold px-2 py-1 rounded">{day === getTodayDay() ? "HARI INI" : DAYS.find((d) => d.en === day)?.id.toUpperCase()}</span>
             </AnimeCard>
           ))}
         </AnimeGrid>
