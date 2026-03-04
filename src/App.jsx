@@ -9,6 +9,7 @@ import UpcomingAnime from "@pages/UpcomingAnime";
 import TopAnime from "@pages/TopAnime";
 import TopMovie from "@pages/Topmovie";
 import SeasonNow from "@pages/SeasonNow";
+import ScheduleAnime from "@pages/ScheduleAnime";
 
 function App() {
   return (
@@ -28,6 +29,15 @@ function App() {
           element={
             <MainLayout>
               <Trending />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/schedule"
+          element={
+            <MainLayout>
+              <ScheduleAnime />
             </MainLayout>
           }
         />
