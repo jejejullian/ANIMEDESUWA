@@ -3,8 +3,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainLayout from "./components/layout/MainLayout";
 
 import Home from "./pages/Home";
-import Trending from "@pages/Trending";
 import AnimeDetail from "@pages/AnimeDetail";
+import Trending from "@pages/Trending";
+import UpcomingAnime from "@pages/UpcomingAnime";
+import TopAnime from "@pages/TopAnime";
+import TopMovie from "@pages/Topmovie";
+import SeasonNow from "@pages/SeasonNow";
 
 function App() {
   return (
@@ -29,6 +33,40 @@ function App() {
         />
 
         <Route
+          path="/upcoming-anime"
+          element={
+            <MainLayout>
+              <UpcomingAnime />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/top-anime"
+          element={
+            <MainLayout>
+              <TopAnime />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/top-movie"
+          element={
+            <MainLayout>
+              <TopMovie />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/season-now"
+          element={
+            <MainLayout>
+              <SeasonNow />
+            </MainLayout>
+          }
+        />
+
+        <Route
           path="/anime/:id"
           element={
             <MainLayout>
@@ -37,13 +75,7 @@ function App() {
           }
         />
 
-        <Route
-          path="/login"
-          element={
-            <div className="flex h-screen items-center justify-center bg-gray-200">
-            </div>
-          }
-        />
+        <Route path="/login" element={<div className="flex h-screen items-center justify-center bg-gray-200"></div>} />
       </Routes>
     </BrowserRouter>
   );

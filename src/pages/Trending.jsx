@@ -1,5 +1,6 @@
 import { useTrending } from "@hooks/useTrending";
 import AnimeCard from "@components/anime/AnimeCard";
+import GridSkeleton from "@components/ui/GridSkeleton";
 
 export default function Trending() {
   const { 
@@ -10,12 +11,13 @@ export default function Trending() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <div className="text-xl text-foreground-muted">Sedang memuat semua anime trending...</div>
-        <div className="text-sm text-foreground-muted">
-          Ini mungkin memakan waktu beberapa detik untuk mengambil semua data
+      <div className="p-6">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-foreground animate-pulse">
+            Memuat Trending...
+          </h1>
         </div>
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
+        <GridSkeleton count={15} />
       </div>
     );
   }

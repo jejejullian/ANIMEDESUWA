@@ -1,32 +1,32 @@
 import HeroCarousel from "@components/anime/hero/HeroCarousel";
 import SectionCarousel from "@components/anime/section/SectionCarousel";
 
+
 import useSeasonNow from "@hooks/useSeasonNow";
-import useCurrentSeasonLatestEpisodes from "@hooks/useCurrentSeasonLatestEpisodes";
 import useTopAnime from "@hooks/useTopAnime";
-import useTopMovieAiring from "@hooks/useTopMovieAiring";
+import useTopMovieAiring from "@hooks/useTopMovie";
+import useUpcomingAnime from "@hooks/useUpcomingAnime";
 
 export default function Home() {
-  const { data: seasonAnimes = [], isLoading: seasonLoading } = useSeasonNow(12);
+  const { data: seasonData, isLoading: seasonLoading } = useSeasonNow(1, 12);
 
-  const { data: latestAnimes = [], isLoading: latestLoading } = useCurrentSeasonLatestEpisodes(8);
+  const {data: upcomingData, isLoading: upcomingLoading} = useUpcomingAnime(1, 15)
 
-  const {data: topAnime = [], isLoading: topLoading} = useTopAnime(15)
+  const { data: topData, isLoading: topLoading } = useTopAnime(1, 15);
 
-  const {data: topMovie = [], isLoading: topMovieLoading} = useTopMovieAiring(15)
+  const { data: movieData, isLoading: movieLoading } = useTopMovieAiring(1, 15);
 
   return (
     <div className="p-4 sm:p-6">
       <HeroCarousel />
 
-      <SectionCarousel title="Season Now" animes={seasonAnimes} loading={seasonLoading} />
+      <SectionCarousel title="Season Now" animes={seasonData?.data || []} loading={seasonLoading} seeAllLink="/season-now" />
 
-      <SectionCarousel title="Latest Episodes" animes={latestAnimes} loading={latestLoading} />
+      <SectionCarousel title="Upcoming" animes={upcomingData?.data || []} loading={upcomingLoading} seeAllLink="/upcoming-anime" />
 
-      <SectionCarousel title="Top Anime" animes={topAnime} loading={topLoading} />
+      <SectionCarousel title="Top Anime" animes={topData?.data || []} loading={topLoading} seeAllLink="/top-anime" />
 
-      <SectionCarousel title="Top Movie" animes={topMovie} loading={topMovieLoading} />
-
+      <SectionCarousel title="Top Movie" animes={movieData?.data || []} loading={movieLoading} seeAllLink="/top-movie" />
     </div>
   );
 }
