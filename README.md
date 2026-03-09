@@ -1,16 +1,27 @@
-# React + Vite
+# 🌸 AnimeDesuwa
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+AnimeDesuwa is a modern, responsive web application designed for anime enthusiasts to discover, track, and manage their favorite anime series and movies. Powered by the **Jikan API (MyAnimeList)** for extensive anime data and **Supabase** for secure authentication and database management.
 
-Currently, two official plugins are available:
+### 🚀 Live Demo: [Kunjungi AnimeDesuwa di sini](https://animedesuwa.vercel.app) 
+*(Catatan: Ganti URL di dalam kurung di atas dengan link Vercel kamu yang asli)*
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+![AnimeDesuwa Preview](https://via.placeholder.com/800x400?text=AnimeDesuwa+Preview) ## ✨ Features
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+- **🔐 User Authentication:** Secure Sign Up and Log In using Supabase Auth.
+- **👤 User Profiles:** Auto-generated avatars (via UI-Avatars) and an editable bio for personalized profiles.
+- **📺 Discover Anime:** Browse thousands of anime, view details, synopses, trailers, and episode lists using the Jikan API.
+- **📌 My List (Watchlist):** Add anime to your personal watchlist, remove them, and filter your list by type (TV, Movie, OVA, ONA, Special).
+- **📱 Responsive Design:** A sleek, dark-themed UI built with Tailwind CSS that looks perfect on both mobile and desktop screens.
+- **🔔 Toast Notifications:** Smooth, real-time feedback for user actions (login, saving bio, adding to watchlist).
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **Frontend Framework:** [React.js](https://react.dev/) (Bootstrapped with [Vite](https://vitejs.dev/))
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+- **Routing:** [React Router v6](https://reactrouter.com/)
+- **Backend/BaaS:** [Supabase](https://supabase.com/) (PostgreSQL & Authentication)
+- **External API:** [Jikan API](https://jikan.moe/) (Unofficial MyAnimeList API)
+- **Icons & Alerts:** `react-icons` & `react-hot-toast`
+
