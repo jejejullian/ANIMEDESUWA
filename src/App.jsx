@@ -6,6 +6,7 @@ import Register from "@pages/Register";
 
 import Profile from "@pages/Profile";
 import Watchlist from "./pages/Watchlist";
+import Search from "@pages/Search";
 
 import MainLayout from "./components/layout/MainLayout";
 
@@ -38,6 +39,16 @@ function App() {
 
         <Route path="/profile" element={<Profile />} />
         <Route path="/watchlist" element={<Watchlist />} />
+        {/* <Route path="/search" element={<Search />} /> */}
+
+        <Route
+          path="/search"
+          element={
+            <MainLayout>
+              <Search />
+            </MainLayout>
+          }
+        />
 
         <Route
           path="/"

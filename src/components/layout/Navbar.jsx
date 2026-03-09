@@ -8,6 +8,9 @@ export default function Navbar({ onMenuClick }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   
+  // 🔥 State baru untuk menyimpan teks yang diketik user
+  const [searchKeyword, setSearchKeyword] = useState(""); 
+  
   const { user, logout } = useAuth(); 
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
@@ -29,6 +32,16 @@ export default function Navbar({ onMenuClick }) {
     navigate("/");
   };
 
+  // 🔥 Fungsi untuk mengeksekusi pencarian saat user tekan Enter
+  const handleSearch = (e) => {
+    e.preventDefault(); // Mencegah browser me-refresh halaman
+    if (searchKeyword.trim() !== "") {
+      navigate(`/search?q=${searchKeyword}`);
+      setIsSearchOpen(false); // Tutup search mobile kalau lagi kebuka
+      setSearchKeyword(""); // Kosongkan input setelah mencari
+    }
+  };
+
   return (
     <header className="bg-surface-2 shadow-sm h-16 fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4">
       <nav className={`flex items-center gap-4 w-full justify-between ${isSearchOpen ? "hidden md:flex" : "flex"}`}>
@@ -43,11 +56,19 @@ export default function Navbar({ onMenuClick }) {
           </Link>
         </div>
 
-        {/* Search Bar (Hanya Muncul di LAPTOP) */}
-        <div className="hidden md:flex flex-1 max-w-xl mx-8 relative">
-          <input type="text" placeholder="Cari anime..." className="w-full bg-surface-1 border border-outline text-foreground rounded-full py-2 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-brand-dark transition" />
-          <FaSearch className="absolute right-4 top-3 text-foreground-muted" />
-        </div>
+        {/* 🔥 Search Bar (LAPTOP) - Diubah div menjadi form */}
+        <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-xl mx-8 relative">
+          <input 
+            type="text" 
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+            placeholder="Cari anime..." 
+            className="w-full bg-surface-1 border border-outline text-foreground rounded-full py-2 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-brand-dark transition" 
+          />
+          <button type="submit" className="absolute right-4 top-3 text-foreground-muted hover:text-brand transition cursor-pointer">
+            <FaSearch />
+          </button>
+        </form>
 
         {/* Icon Search (HP) & User Actions */}
         <div className="flex items-center gap-2 md:gap-4">
@@ -127,10 +148,20 @@ export default function Navbar({ onMenuClick }) {
           <FaArrowLeft size={20} />
         </button>
 
-        <div className="flex-1 relative">
-          <input type="text" placeholder="Mau nonton apa..." className="w-full bg-surface-1 border border-outline text-white rounded-full py-2 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-brand" autoFocus />
-          <FaSearch className="absolute right-4 top-3 text-foreground-muted" />
-        </div>
+        {/* 🔥 Search Bar (HP) - Diubah div menjadi form */}
+        <form onSubmit={handleSearch} className="flex-1 relative">
+          <input 
+            type="text" 
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+            placeholder="Mau nonton apa..." 
+            className="w-full bg-surface-1 border border-outline text-white rounded-full py-2 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-brand" 
+            autoFocus={isSearchOpen} 
+          />
+          <button type="submit" className="absolute right-4 top-3 text-foreground-muted hover:text-brand transition cursor-pointer">
+            <FaSearch />
+          </button>
+        </form>
       </div>
     </header>
   );
