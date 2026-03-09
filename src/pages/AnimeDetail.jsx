@@ -1,30 +1,71 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 import { useAnimeDetail } from "@hooks/useAnimeDetail";
 import { useAnimeEpisodes } from "@hooks/useAnimeEpisodes";
+import { useAuth } from "@contexts/AuthContext";
+import { supabase } from "@lib/supabase";
 
 export default function AnimeDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isInWatchlist, setIsInWatchlist] = useState(false);
 
-  const { 
-    data: anime, 
-    isLoading: detailLoading, 
-    error: detailError 
-  } = useAnimeDetail(id);
+  const { data: anime, isLoading: detailLoading, error: detailError } = useAnimeDetail(id);
 
-  const { 
-    data: episodesData, 
-    isLoading: episodesLoading, 
-    error: episodesError 
-  } = useAnimeEpisodes(id, currentPage);
+  const { data: episodesData, isLoading: episodesLoading, error: episodesError } = useAnimeEpisodes(id, currentPage);
 
   const episodes = episodesData?.episodes || [];
   const hasMoreEpisodes = episodesData?.hasNextPage ?? false;
+
+  useEffect(() => {
+    const checkWatchlist = async () => {
+      if (!user || !anime) return;
+
+      const { data } = await supabase.from("user_anime").select("id").eq("user_id", user.id).eq("anime_id", anime.mal_id).maybeSingle(); 
+
+      if (data) {
+        setIsInWatchlist(true);
+      }
+    };
+
+    checkWatchlist();
+  }, [user, anime]);
+
+  const handleAddToWatchlist = async () => {
+    if (!user) {
+      toast.error("Silakan Masuk (Login) terlebih dahulu.");
+      navigate("/login");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const { error } = await supabase.from("user_anime").insert([
+        {
+          user_id: user.id,
+          anime_id: anime.mal_id,
+          status: "plan_to_watch",
+        },
+      ]);
+
+      if (error) throw error;
+
+      toast.success("Anime berhasil ditambahkan ke Watchlist!");
+      setIsInWatchlist(true); 
+    } catch (error) {
+      toast.error("Terjadi kesalahan saat menyimpan.");
+      console.error(error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   if (detailLoading) return <div className="p-6 text-center">Memuat detail anime...</div>;
   if (detailError) return <div className="p-6 text-red-500 text-center">Error: {detailError.message}</div>;
@@ -32,20 +73,13 @@ export default function AnimeDetail() {
 
   return (
     <main className="min-h-screen bg-background p-6">
-      <button 
-        onClick={() => navigate(-1)} 
-        className="mb-6 text-brand hover:text-brand-light flex items-center gap-2 cursor-pointer border px-4 py-2 rounded-2xl"
-      >
+      <button onClick={() => navigate(-1)} className="mb-6 text-brand hover:text-brand-light flex items-center gap-2 cursor-pointer border px-4 py-2 rounded-2xl">
         <FaArrowLeft /> Kembali
       </button>
 
       <article className="max-w-6xl mx-auto">
         <header className="flex flex-col md:flex-row gap-8 mb-10">
-          <img 
-            src={anime.images.jpg.large_image_url || "https://via.placeholder.com/300x450?text=No+Image"} 
-            alt={anime.title} 
-            className="w-full md:w-80 rounded-xl shadow-2xl object-cover" 
-          />
+          <img src={anime.images.jpg.large_image_url || "https://via.placeholder.com/300x450?text=No+Image"} alt={anime.title} className="w-full md:w-80 rounded-xl shadow-2xl object-cover" />
 
           <div className="flex-1">
             <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-4">{anime.title}</h1>
@@ -61,7 +95,9 @@ export default function AnimeDetail() {
             <dl className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm mb-8">
               <div>
                 <dt className="text-foreground-muted">Score</dt>
-                <dd><strong className="text-brand">⭐ {anime.score || "N/A"}</strong></dd>
+                <dd>
+                  <strong className="text-brand">⭐ {anime.score || "N/A"}</strong>
+                </dd>
               </div>
               <div>
                 <dt className="text-foreground-muted">Episodes</dt>
@@ -86,14 +122,17 @@ export default function AnimeDetail() {
                 <h2 className="text-2xl font-bold text-foreground">Sinopsis</h2>
               </header>
               <div className="max-h-52 overflow-y-auto scrollbar-thin scrollbar-thumb-brand scrollbar-track-surface-2 px-8 py-6">
-                <p className="text-foreground-muted leading-relaxed whitespace-pre-line">
-                  {anime.synopsis || "Tidak ada sinopsis tersedia."}
-                </p>
+                <p className="text-foreground-muted leading-relaxed whitespace-pre-line">{anime.synopsis || "Tidak ada sinopsis tersedia."}</p>
               </div>
             </section>
 
-            <button className="w-full md:w-auto bg-brand text-foreground px-8 py-4 rounded-xl font-bold hover:bg-brand-dark transition cursor-pointer">
-              Tambah ke Watchlist
+            {/* TOMBOL ADD TO WATCHLIST YANG SUDAH DIUPDATE LOGIKANYA */}
+            <button
+              onClick={handleAddToWatchlist}
+              disabled={isSaving || isInWatchlist}
+              className="w-full md:w-auto bg-brand text-foreground px-8 py-4 rounded-xl font-bold hover:bg-brand-dark transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSaving ? "Menyimpan..." : isInWatchlist ? "Sudah di Watchlist" : "Tambah ke Watchlist"}
             </button>
           </div>
         </header>
@@ -130,11 +169,7 @@ export default function AnimeDetail() {
                     Episode {ep.mal_id} — {ep.title || "Judul tidak tersedia"}
                   </h3>
                   <div className="mt-auto flex items-center justify-between text-xs">
-                    {ep.aired && (
-                      <p className="text-xs text-foreground-muted mt-2">
-                        Tayang: {new Date(ep.aired).toLocaleDateString("id-ID", { year: "numeric", month: "long", day: "numeric" })}
-                      </p>
-                    )}
+                    {ep.aired && <p className="text-xs text-foreground-muted mt-2">Tayang: {new Date(ep.aired).toLocaleDateString("id-ID", { year: "numeric", month: "long", day: "numeric" })}</p>}
                     {ep.filler && <span className="inline-block mt-2 text-xs px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded">Filler</span>}
                   </div>
                 </li>
@@ -143,11 +178,7 @@ export default function AnimeDetail() {
 
             {hasMoreEpisodes && (
               <div className="mt-6 flex justify-center">
-                <button 
-                  onClick={() => setCurrentPage(prev => prev + 1)} 
-                  disabled={episodesLoading}
-                  className="text-brand hover:text-brand-light flex items-center gap-2 cursor-pointer border px-6 py-2 rounded-2xl disabled:opacity-50"
-                >
+                <button onClick={() => setCurrentPage((prev) => prev + 1)} disabled={episodesLoading} className="text-brand hover:text-brand-light flex items-center gap-2 cursor-pointer border px-6 py-2 rounded-2xl disabled:opacity-50">
                   {episodesLoading ? "Memuat..." : "Muat Episode Selanjutnya"}
                 </button>
               </div>
