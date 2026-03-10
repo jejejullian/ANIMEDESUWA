@@ -1,6 +1,5 @@
 import { useSearchParams } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
-
 import AnimeGrid from "@components/anime/AnimeGrid";
 import AnimeCard from "@components/anime/AnimeCard";
 import GridSkeleton from "@components/ui/GridSkeleton";

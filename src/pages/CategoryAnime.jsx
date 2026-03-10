@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom"; 
 import useCategoryAnime from "@hooks/useCategoryAnime";
 import useGenres from "@hooks/useGenres";
 import AnimeCard from "@components/anime/AnimeCard";
@@ -10,13 +11,26 @@ import AnimeGrid from "@components/anime/AnimeGrid";
 import StateMessage from "@components/ui/StateMessage";
 
 export default function CategoryAnime() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [filters, setFilters] = useState({
-    genre: "",
-    status: "",
-    type: "",
-    orderBy: "rating",
-    page: 1,
+    genre: searchParams.get("genre") || "",
+    status: searchParams.get("status") || "",
+    type: searchParams.get("type") || "",
+    orderBy: searchParams.get("orderBy") || "rating",
+    page: parseInt(searchParams.get("page")) || 1, 
   });
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    
+    if (filters.genre) params.set("genre", filters.genre);
+    if (filters.status) params.set("status", filters.status);
+    if (filters.type) params.set("type", filters.type);
+    if (filters.orderBy !== "rating") params.set("orderBy", filters.orderBy);
+    if (filters.page > 1) params.set("page", filters.page); 
+
+    setSearchParams(params, { replace: true });
+  }, [filters, setSearchParams]);
 
   const { data, isLoading, isFetching, error } = useCategoryAnime(filters);
   const { data: genresData } = useGenres();
