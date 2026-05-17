@@ -7,6 +7,12 @@ export default defineConfig({
     react(),
     tailwindcss(), 
   ],
+  test:{
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './src/tests/setup.js'
+
+  },
   resolve: {
     alias: {
      '@components': '/src/components',
