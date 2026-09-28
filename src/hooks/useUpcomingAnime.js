@@ -1,28 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
-import { JIKAN_API_BASE, JIKAN_ENDPOINTS, JIKAN_QUERIES } from "@utils/constants";
-import { enqueue } from "@utils/requestQueue";
+import { JIKAN_ENDPOINTS } from "@utils/constants";
+import { jikanFetch } from "@utils/jikanClient";
 
 export default function useUpcomingAnime(page = 1, limit = 24) {
   return useQuery({
     queryKey: ["UpcomingAnime", page, limit],
-    queryFn: () =>
-      enqueue(async () => {
-        const res = await fetch(
-          `${JIKAN_API_BASE}${JIKAN_ENDPOINTS.SEASONS_UPCOMING}?page=${page}&limit=${limit}&${JIKAN_QUERIES.SFW}`
-        );
-        if (!res.ok) {
-          if (res.status === 429) throw new Error("Rate limit, tunggu sebentar...");
-          throw new Error("Gagal mengambil data Upcoming Anime");
-        }
-        const result = await res.json();
-        const uniqueData = Array.from(
-          new Map((result.data || []).map((anime) => [anime.mal_id, anime])).values()
-        );
-        return { ...result, data: uniqueData };
-      }),
+    queryFn: async ({ signal }) => {
+      const result = await jikanFetch(JIKAN_ENDPOINTS.SEASONS_UPCOMING, {
+        signal,
+        params: { page, limit, sfw: "true" },
+      });
+      const uniqueData = Array.from(new Map((result.data || []).map((a) => [a.mal_id, a])).values());
+      return { ...result, data: uniqueData };
+    },
     staleTime: 24 * 60 * 60 * 1000,
-    retry: 2,
-    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
     placeholderData: (previousData) => previousData,
   });
 }

@@ -1,66 +1,40 @@
 import { useQuery } from "@tanstack/react-query";
-import { JIKAN_API_BASE, JIKAN_ENDPOINTS, JIKAN_QUERIES } from "@utils/constants";
-import { enqueue } from "@utils/requestQueue";
+import { JIKAN_ENDPOINTS } from "@utils/constants";
+import { jikanFetch } from "@utils/jikanClient";
 
 const ITEMS_PER_PAGE = 24;
+const MAX_PAGES = 10; // pengaman: jangan pernah menembak puluhan halaman
 
-async function fetchAllSeasonNow() {
-  // Fetch page 1 
-  const firstData = await enqueue(async () => {
-    const res = await fetch(
-      `${JIKAN_API_BASE}${JIKAN_ENDPOINTS.SEASONS_NOW}?page=1&limit=25&${JIKAN_QUERIES.SFW}`
-    );
-    if (!res.ok) {
-      if (res.status === 429) throw new Error("Rate Limit, tunggu sebentar ...");
-      throw new Error("Gagal mengambil data season now");
-    }
-    return res.json();
-  });
+async function fetchAllSeasonNow(signal) {
+  const fetchPage = (page) =>
+    jikanFetch(JIKAN_ENDPOINTS.SEASONS_NOW, { signal, params: { page, limit: 25, sfw: "true" } });
 
-  const totalPages = firstData.pagination?.last_visible_page || 1;
+  const first = await fetchPage(1);
+  const totalPages = Math.min(first.pagination?.last_visible_page || 1, MAX_PAGES);
 
-  // Fetch page sisanya 
-  const otherData = [];
+  const rest = [];
   for (let p = 2; p <= totalPages; p++) {
-    const pageData = await enqueue(async () => {
-      const res = await fetch(
-        `${JIKAN_API_BASE}${JIKAN_ENDPOINTS.SEASONS_NOW}?page=${p}&limit=25&${JIKAN_QUERIES.SFW}`
-      );
-      if (!res.ok) return { data: [] };
-      return res.json();
-    });
-    otherData.push(...(pageData.data || []));
+    try {
+      rest.push(...((await fetchPage(p)).data || []));
+    } catch (err) {
+      if (err?.name === "AbortError") throw err;
+      break; // halaman belakang gagal: tampilkan yang sudah ada daripada gagal total
+    }
   }
 
-  const allAnime = [...(firstData.data || []), ...otherData];
+  const filtered = [...(first.data || []), ...rest]
+    .filter((a) => a.status !== "Not yet aired" && a.aired?.from !== null)
+    .filter((a, i, self) => i === self.findIndex((b) => b.title === a.title));
 
-  // Filter & dedup
-  const filtered = allAnime
-    .filter((anime) => anime.status !== "Not yet aired" && anime.aired?.from !== null)
-    .filter((anime, index, self) => index === self.findIndex((a) => a.title === anime.title));
-
-  // Sort: airing 
-  filtered.sort((a, b) => {
-    if (a.airing && !b.airing) return -1;
-    if (!a.airing && b.airing) return 1;
-    return 0;
-  });
-
+  filtered.sort((a, b) => (a.airing === b.airing ? 0 : a.airing ? -1 : 1));
   return filtered;
 }
 
 export default function useSeasonNow(page = 1) {
-  const {
-    data: allAnime = [],
-    isLoading,
-    error,
-    isFetching,
-  } = useQuery({
+  const { data: allAnime = [], isLoading, error, isFetching } = useQuery({
     queryKey: ["SeasonNowAll"],
-    queryFn: fetchAllSeasonNow,
+    queryFn: ({ signal }) => fetchAllSeasonNow(signal),
     staleTime: 30 * 60 * 1000,
-    retry: 2,
-    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000), 
   });
 
   const totalItems = allAnime.length;

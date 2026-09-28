@@ -13,7 +13,7 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 24 * 60 * 60 * 1000,
       gcTime: 48 * 60 * 60 * 1000,
-      retry: 2,
+      retry: false, // retry + backoff 429/5xx sudah ditangani utils/jikanClient
       refetchOnWindowFocus: false,
     },
   },

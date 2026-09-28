@@ -1,24 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import { JIKAN_API_BASE } from "@utils/constants";
-import { enqueue } from "@utils/requestQueue";
+import { JIKAN_ENDPOINTS } from "@utils/constants";
+import { jikanFetch } from "@utils/jikanClient";
 
 export default function useSearchAnime(query) {
   return useQuery({
     queryKey: ["SearchAnime", query],
-    queryFn: () =>
-      enqueue(async () => {
-        const res = await fetch(
-          `${JIKAN_API_BASE}/anime?q=${query}&sfw=true`
-        );
-        if (!res.ok) {
-          if (res.status === 429) throw new Error("Rate limit, tunggu sebentar...");
-          throw new Error("Gagal mengambil data pencarian");
-        }
-        return res.json();
-      }),
-    enabled: !!query, 
-    staleTime: 15 * 60 * 1000, 
-    retry: 2,
-    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
+    // params di-encode otomatis, jadi "spy x family" / "&" / "#" tidak merusak URL
+    queryFn: ({ signal }) =>
+      jikanFetch(JIKAN_ENDPOINTS.ANIME_SEARCH, { signal, params: { q: query, sfw: "true" } }),
+    enabled: !!query,
+    staleTime: 15 * 60 * 1000,
   });
 }

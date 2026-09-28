@@ -5,6 +5,8 @@ import { supabase } from "@lib/supabase";
 import { FaTrash, FaBookmark, FaArrowLeft } from "react-icons/fa";
 import toast from "react-hot-toast";
 import PageHeader from "@components/ui/PageHeader";
+import { JIKAN_ENDPOINTS } from "@utils/constants";
+import { jikanFetch } from "@utils/jikanClient";
 
 export default function Watchlist() {
   const { user } = useAuth();
@@ -39,12 +41,7 @@ export default function Watchlist() {
 
         const animeDetailsPromises = userAnimeData.map(async (item) => {
           try {
-            await new Promise((resolve) => setTimeout(resolve, 300));
-
-            const response = await fetch(`https://api.jikan.moe/v4/anime/${item.anime_id}`);
-            if (!response.ok) throw new Error("Gagal fetch API");
-
-            const result = await response.json();
+            const result = await jikanFetch(JIKAN_ENDPOINTS.ANIME_BY_ID(item.anime_id));
             return {
               ...result.data,
               supabase_id: item.id,

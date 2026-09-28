@@ -36,7 +36,7 @@ export default function Navbar({ onMenuClick }) {
   const handleSearch = (e) => {
     e.preventDefault(); // Mencegah browser me-refresh halaman
     if (searchKeyword.trim() !== "") {
-      navigate(`/search?q=${searchKeyword}`);
+      navigate(`/search?q=${encodeURIComponent(searchKeyword.trim())}`);
       setIsSearchOpen(false); // Tutup search mobile kalau lagi kebuka
       setSearchKeyword(""); // Kosongkan input setelah mencari
     }

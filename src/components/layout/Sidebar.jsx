@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { FaHome, FaFire, FaThLarge, FaCalendarAlt, FaSignInAlt } from "react-icons/fa"; 
 
 const sidebarMenu = [
-  { name: "Home", path: "/", icon: <FaHome /> },
+  { name: "Home ", path: "/", icon: <FaHome /> },
   { name: "Trending", path: "/trending", icon: <FaFire /> },
   { name: "Kategori", path: "/category", icon: <FaThLarge /> },
   { name: "Jadwal", path: "/schedule", icon: <FaCalendarAlt /> },

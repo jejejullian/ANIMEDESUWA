@@ -1,24 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
-import { JIKAN_API_BASE, JIKAN_ENDPOINTS, JIKAN_QUERIES } from "@utils/constants";
-import { enqueue } from "@utils/requestQueue";
+import { JIKAN_ENDPOINTS } from "@utils/constants";
+import { jikanFetch } from "@utils/jikanClient";
 
 export default function useTopAnime(page = 1, limit = 24) {
   return useQuery({
     queryKey: ["TopAnime", page, limit],
-    queryFn: () =>
-      enqueue(async () => {
-        const res = await fetch(
-          `${JIKAN_API_BASE}${JIKAN_ENDPOINTS.TOP_ANIME}?type=tv&page=${page}&limit=${limit}&${JIKAN_QUERIES.SFW}`
-        );
-        if (!res.ok) {
-          if (res.status === 429) throw new Error("Rate limit, tunggu sebentar...");
-          throw new Error("Gagal mengambil data Top Anime");
-        }
-        return res.json();
+    queryFn: ({ signal }) =>
+      jikanFetch(JIKAN_ENDPOINTS.TOP_ANIME, {
+        signal,
+        params: { type: "tv", page, limit, sfw: "true" },
       }),
     staleTime: 24 * 60 * 60 * 1000,
-    retry: 2,
-    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
     placeholderData: (previousData) => previousData,
   });
 }

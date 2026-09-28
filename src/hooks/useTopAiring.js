@@ -1,24 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import { JIKAN_API_BASE, JIKAN_ENDPOINTS, JIKAN_QUERIES } from "@utils/constants";
-import { enqueue } from "@utils/requestQueue";
+import { JIKAN_ENDPOINTS } from "@utils/constants";
+import { jikanFetch } from "@utils/jikanClient";
 
 export default function useTopAiring(limit = 8) {
   return useQuery({
     queryKey: ["TopAiring", limit],
-    queryFn: () =>
-      enqueue(async () => {
-        const res = await fetch(
-          `${JIKAN_API_BASE}${JIKAN_ENDPOINTS.TOP_AIRING}&${JIKAN_QUERIES.LIMIT(limit)}&${JIKAN_QUERIES.SFW}`
-        );
-        if (!res.ok) {
-          if (res.status === 429) throw new Error("Rate limit, tunggu sebentar...");
-          throw new Error("Gagal mengambil top airing");
-        }
-        const data = await res.json();
-        return data.data || [];
-      }),
+    queryFn: async ({ signal }) => {
+      const res = await jikanFetch(JIKAN_ENDPOINTS.TOP_AIRING, {
+        signal,
+        params: { limit, sfw: "true" },
+      });
+      return res.data || [];
+    },
     staleTime: 30 * 60 * 1000,
-    retry: 2,
-    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
   });
 }
